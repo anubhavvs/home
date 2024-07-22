@@ -1,0 +1,42 @@
+version: "3"
+
+volumes:
+  grafana-data:
+    driver: local
+  prometheus-data:
+    driver: local
+
+services:
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "7000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    network_mode: bridge
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "7001:9090"
+    command: "--config.file=/etc/prometheus/prometheus.yaml"
+    volumes:
+      - /root/apps/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml:ro
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    network_mode: bridge
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    pid: host
+    ports:
+      - "7002:9100"
+    restart: unless-stopped
+    network_mode: bridge
+    volumes:
+      - /:/host:ro,rslave
