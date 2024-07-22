@@ -1,0 +1,12 @@
+version: "3.3"
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    volumes:
+      - /root/apps/uptime-kuma/uptime-kuma-data:/app/data
+    ports:
+      - 3005:3001
+    restart: unless-stopped
+    network_mode: bridge
